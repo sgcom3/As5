@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project.Module;
 using Project1.DataAccess;
-using Project1.Helpers;
 using System.Linq;
 
 namespace Project1.Controllers
@@ -13,7 +12,6 @@ namespace Project1.Controllers
     public class ProductController : ControllerBase
     {
         private readonly ApplicationContext _context;
-        private readonly string _secretKey = "this_is_a_very_long_secret_key_1234567890"; 
 
         public ProductController(ApplicationContext context)
         {
@@ -27,6 +25,7 @@ namespace Project1.Controllers
             var products = _context.Products.ToList();
             return Ok(products);
         }
+
         [HttpGet("Product/{id}")]
         [Authorize(Roles = "admin,user")]
         public IActionResult GetProduct([FromRoute] int id)
@@ -38,6 +37,7 @@ namespace Project1.Controllers
             }
             return Ok(product);
         }
+
         [Authorize(Roles = "admin")]
         [HttpPost("Products")]
         public IActionResult Save([FromBody] Product product)
@@ -46,6 +46,7 @@ namespace Project1.Controllers
             _context.SaveChanges();
             return Ok();
         }
+
         [Authorize(Roles = "admin")]
         [HttpPut("Products")]
         public IActionResult Update([FromBody] Product product)
@@ -60,6 +61,7 @@ namespace Project1.Controllers
             _context.SaveChanges();
             return Ok();
         }
+
         [Authorize(Roles = "admin")]
         [HttpDelete("Products")]
         public IActionResult Delete([FromBody] Product product)
@@ -74,29 +76,5 @@ namespace Project1.Controllers
             _context.SaveChanges();
             return Ok();
         }
-    
-
-
-
-    [HttpPost("LoginAdmin")]
-public IActionResult LoginAdmin()
-{
-    var token = JwtHelper.GenerateJwtToken("admin", "admin", _secretKey, "yourissuer", "youraudience");
-    return Ok(new { token });
-}
-
-[HttpPost("LoginUser")]
-public IActionResult LoginUser()
-{
-    var token = JwtHelper.GenerateJwtToken("user", "user", _secretKey, "yourissuer", "youraudience");
-    return Ok(new { token });
-}
-
-    }
-
-    public class UserRoleChangeRequest
-    {
-        public string Username { get; set; }
-        public string NewRole { get; set; }
     }
 }
